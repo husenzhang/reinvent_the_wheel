@@ -1,24 +1,79 @@
 import csv
 from operator import itemgetter
 
-def csv_data(csvname):
-    """Usage: df  =  csv_data('b6.tsv')"""
-    data = []
-    with open(csvname, 'r') as f:
-        reader = csv.reader(f, delimiter='\t')
-        for line in reader:
-            data.append(line)
-    return data
+# read tsv to dict
+# parse dict field when read
+# sort ('target', 'size')
 
-def size_sort(data):
-    """add size in the last column then sort by k1, k12"""
-    for row in data:
-        size = int(row[0].strip(';').split('=')[-1])
-        row.append(size)
-    data.sort(key=itemgetter(1, 12), reverse=True)
-    return data
+parserTuples = [('query',  None),
+                 ('target', None),
+                 ('id',     float),
+                 ('alnlen', int),
+                 ('mism',   int),
+                 ('opens',  int),
+                 ('qlo',    int),
+                 ('qhi',    int),
+                 ('tlo',    int),
+                 ('thi',    int),
+                 ('evalue', float),
+                 ('qseq',   None)]
 
-def delete_pattern(df, pattern):
-    """if pattern exists in a row, delete that row"""
-    [ df.pop(i) for i, row in enumerate(df) if pattern in row]
-    return df
+parsers = {a:b for a, b in parserTuples}
+
+fields = [a for a, _ in parserTuples]
+
+def parse_item(field, value, parsers):
+    """ field, value are strings, parsers is a dict.
+        helper function for parse_dict"""
+    parser = parsers.get(field)
+    return value if parser is None else parser(value)
+
+def parse_dict(input_dict, parsers):
+    """ a dict has many items, return a dict"""
+    return { field : parse_item(field, value, parsers)
+             for field, value in input_dict.items() }
+
+def query_size(query):
+    """ helper function to deal with size annotation"""
+    size = int(query.strip(';').split('=')[-1])
+    return size
+
+def qseq_to_exon(row):
+    start, end = row['qlo'], row['qhi']
+    return row['qseq'][start:end]
+
+def sort_then_topn(data, field1, field2, topn):
+    return data.sort(key=lambda x: (x[field1], x[field2]))[:topn]
+
+def tsv_dict(tsv, fdnames, parsers):
+    """parse occurs for each row, which is a dict"""
+    with open(tsv, 'r') as f:
+        reader = csv.DictReader(f, delimiter='\t', fieldnames = fdnames)
+        data = []
+        for row in reader:
+            row = parse_dict(row, parsers)
+            row['size'] = query_size(row['query'])
+            row['qseq'] = qseq_to_exon(row)        
+            data.append(row)
+    return data
+## ------------------------------------------------------------------
+
+# data.sort(key=itemgetter(1, 12), reverse=True)
+
+def write_fasta(df, fasta_name, seed_label= False):
+    """usage: write_fasta(df, 'out/derep.fa', seed_label = True) """
+    with open(fasta_name, 'w') as f:
+        for _, row in df.iterrows():
+            if not seed_label:
+                header = '>' + row['qid']
+            else:
+                header = '>' + row['qid'] + row['target']
+            f.write(header + '\n' + row['qseq'] + '\n')
+
+def main(filename):
+    """return None; write csv and fasta one per line """
+    csv_name, fa_name = filename + '.csv',  filename + '.fa'
+    df = sort_groupby_top3(df_gen(filename))
+    df.to_csv(csv_name, index = False)
+    write_fasta(df, fa_name, seed_label = True)
+
