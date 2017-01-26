@@ -73,7 +73,6 @@ def write_fasta(df, fasta_name, seed_label= False):
 def main(filename):
     """return None; write csv and fasta one per line """
     csv_name, fa_name = filename + '.csv',  filename + '.fa'
-    df = sort_groupby_top3(df_gen(filename))
-    df.to_csv(csv_name, index = False)
+
     write_fasta(df, fa_name, seed_label = True)
 
