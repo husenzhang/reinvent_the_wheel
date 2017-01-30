@@ -1,8 +1,7 @@
 import csv
 from operator import itemgetter
 
-# read tsv to dict
-# parse dict field when read
+# read tsv to dict ,parse dict field when read
 # sort ('target', 'size')
 
 parserTuples = [('query',  None),
@@ -56,9 +55,6 @@ def tsv_dict(tsv, fdnames, parsers):
             row['qseq'] = qseq_to_exon(row)        
             data.append(row)
     return data
-## ------------------------------------------------------------------
-
-# data.sort(key=itemgetter(1, 12), reverse=True)
 
 def write_fasta(df, fasta_name, seed_label= False):
     """usage: write_fasta(df, 'out/derep.fa', seed_label = True) """
@@ -71,9 +67,4 @@ def write_fasta(df, fasta_name, seed_label= False):
             f.write(header + '\n' + row['qseq'] + '\n')
 
 def main(filename):
-    """return None; write csv and fasta one per line """
-    csv_name, fa_name = filename + '.csv',  filename + '.fa'
-    df = sort_groupby_top3(df_gen(filename))
-    df.to_csv(csv_name, index = False)
-    write_fasta(df, fa_name, seed_label = True)
-
+    """ """
