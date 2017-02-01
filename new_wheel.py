@@ -1,5 +1,4 @@
 import csv
-from operator import itemgetter
 
 # read tsv to dict ,parse dict field when read
 # sort ('target', 'size')
