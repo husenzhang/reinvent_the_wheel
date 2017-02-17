@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library('ggplot2')
 
 d = read.delim(file("stdin"), header=F)
