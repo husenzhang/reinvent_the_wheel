@@ -16,13 +16,4 @@ if (length(names(d) == 3))  {
           guides(fill=guide_legend(title=NULL)) + 
           xlab(NULL) +
           ylab(NULL) +
-          coord_flip()
-
-} else {
-p = ggplot(d, aes(factor(d[,1], levels= rev(d[,1])), d[,2])) + 
-          geom_bar(stat = 'identity') +
-          xlab(NULL) +
-          ylab(NULL) +
-          coord_flip()
-}
-ggsave('plot.pdf', plot=p, height=5, width=5)
+ggsave('plot.pdf', plot=p, width=5, height=5)
