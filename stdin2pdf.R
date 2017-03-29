@@ -4,7 +4,6 @@ library('ggplot2')
 theme_set(theme_bw())
 library(reshape2)
 
-
 d = read.delim(file("stdin"), header=F)
 
 print(length(names(d)))
