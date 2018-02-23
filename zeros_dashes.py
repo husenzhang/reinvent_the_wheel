@@ -2,9 +2,7 @@
 def remove_zeros_dashes(s):
     """
     remove from string s:
-    non-trailing 0s 
-    all '-'
-    keep trailing 0s
+    non-trailing 0s,  all '-', but keep trailing 0s
     """
     s = s.strip('-')
     num_tailing_zeros = len(s) - len(s.rstrip('0'))
@@ -15,7 +13,6 @@ def remove_zeros_dashes(s):
     for char in s:
         if char not in pad:
            keep = keep + char
-
     
     return keep + '0'*num_tailing_zeros
 
