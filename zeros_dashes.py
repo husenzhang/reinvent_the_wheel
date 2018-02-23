@@ -15,5 +15,3 @@ def remove_zeros_dashes(s):
            keep = keep + char
     
     return keep + '0'*num_tailing_zeros
-
-
